@@ -10,6 +10,7 @@ def lexer(token):
 	checkNumber = 0
 	checkNotIdentifier = 0
 	checkComments = 0
+	checkString = 0
 
 	print(token)
 
@@ -30,6 +31,12 @@ def lexer(token):
 
 	numbersHead = string.digits + "."
 	numbersTail = string.digits + "." + ""
+
+	for i in range(0, len(token)):
+		if (token[i] == "\""):
+			print("STRING")
+			checkString = 1
+			break;
 
 	for i in range(0, len(token)):
 		if (token[i] == '#'):
@@ -67,6 +74,7 @@ def lexer(token):
 			print("DATA TYPE")
 			checkNotIdentifier = 1
 
+
 	for i in range(0, len(token)):
 		for j in range(0, len(identifiersHead)):
 			if (token[i] == identifiersHead[j]):
@@ -76,7 +84,7 @@ def lexer(token):
 							checkIdentifier = 1
 				break;
 
-	if (checkIdentifier == 1 and checkNotIdentifier == 0) and checkComments != 1:
+	if ((checkIdentifier == 1 and checkNotIdentifier == 0) and checkComments != 1) and checkString != 1:
 		print("IDENTIFIER")
 
 
@@ -87,16 +95,26 @@ def scanner():
 	nextChar = f.read(1)
 	return nextChar
 
-token = ""
-while f.read(1):
-	f.seek(-1,1)
-	c = scanner()
-	# print("CHARACTER: " + c)
-	if (c != ' ' and c != '\n'):
-		token = token + c
-		# print(string)
-	else:
-		lexer(token)
-		token = ""
+def run():
+	token = ""
+	while f.read(1):
+		f.seek(-1,1)
+		c = scanner()
+		# print("CHARACTER: " + c)
+		if (ord(c) == 34):
+			# print("YAY")
+			token = token + c
+			c = scanner()
+			while (ord(c) != 34):
+				token = token + c
+				c = scanner()
+			token = token + c
+			# print("TOKEN ", token)
+		elif (c != ' ' and c != '\n'):
+			token = token + c
+		else:
+			lexer(token)
+			token = ""
 
+run()
 f.close()
